@@ -29,6 +29,6 @@ class LowDisk extends Mailable
      */
     public function build()
     {
-        return $this->view('mail.low-disk', $this->data);
+        return $this->markdown('mail.low-disk', $this->data);
     }
 }

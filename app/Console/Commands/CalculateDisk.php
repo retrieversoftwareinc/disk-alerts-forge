@@ -12,7 +12,7 @@ class CalculateDisk extends Command
      *
      * @var string
      */
-    protected $signature = 'calculate:disk {--location=/} {--email=} {--alert-when=10} {--test=false}';
+    protected $signature = 'calculate:disk {--location=/} {--email=} {--alert-when=10} {--test}';
 
     /**
      * The console command description.
@@ -38,7 +38,7 @@ class CalculateDisk extends Command
      */
     public function handle()
     {
-        $isTest = boolval($this->option('test'));
+        $isTest = $this->option('test');
 
         $location = $this->option('location');
 
@@ -49,9 +49,8 @@ class CalculateDisk extends Command
         }
 
         $emailsTo = $this->option('email');
-        if (empty($emailsTo) && !$isTest) {
-            // exit because apparently no one wants to be notified.
-            return;
+        if (empty($emailsTo)) {
+            $emailsTo = $this->getEnvEmails();
         }
 
         if (! is_array($emailsTo)) {
@@ -66,13 +65,13 @@ class CalculateDisk extends Command
         $disk_used = $this->bToGb($disk_used);
         $total_disk = $this->bToGb($total_disk);
 
-        if($alert < round($disk_free)) {
-            $this->info("Alert value: $alert GB");
+        $this->info("Alert value: $alert GB");
 
-            $this->info("Total disk free: $disk_free GB");
-            $this->info("Your alert value is less than the free space.");
-            return;
-        }
+        //if($alert < round($disk_free)) {
+        //    $this->info("Total disk free: $disk_free GB");
+        //    $this->info("Your alert value is less than the free space.");
+        //    return;
+        //}
 
         if($isTest) {
             $this->info("Total disk: $total_disk GB");
@@ -81,11 +80,17 @@ class CalculateDisk extends Command
             return;
         }
 
-        \Mail::to($emailsTo)->send((new LowDisk(compact('disk_free', 'total_disk', 'disk_used', 'location', 'alert'))));
+        \Mail::to($emailsTo)
+            ->send((new LowDisk(compact('disk_free', 'total_disk', 'disk_used', 'location', 'alert'))));
     }
 
     public function bToGb($bytes): float
     {
         return round((($bytes / 1024) / 1024) / 1024, 2);
+    }
+
+    public function getEnvEmails()
+    {
+        return explode(',', env('EMAIL_ALERTS'));
     }
 }
