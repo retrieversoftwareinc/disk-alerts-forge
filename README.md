@@ -19,7 +19,7 @@ Once the cron job is scheduled you need to add to your `app/Console/Kernel.php` 
 ### Disk space left
 
 ##### Command
-`php artisan calculate:disk {--location=/} {--email=} {--alert-when=10} {--test=false}`
+`php artisan calculate:disk {--location=/} {--email=} {--alert-when=10} {--test}`
 
 ##### Description
 This command sends email alerts based on when the `--alert-when` value is greater than the total avialable disk space
