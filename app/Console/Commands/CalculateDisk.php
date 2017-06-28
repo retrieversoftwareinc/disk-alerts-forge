@@ -67,11 +67,11 @@ class CalculateDisk extends Command
 
         $this->info("Alert value: $alert GB");
 
-        //if($alert < round($disk_free)) {
-        //    $this->info("Total disk free: $disk_free GB");
-        //    $this->info("Your alert value is less than the free space.");
-        //    return;
-        //}
+        if($alert < round($disk_free)) {
+            $this->info("Total disk free: $disk_free GB");
+            $this->info("Your alert value is less than the free space.");
+            return;
+        }
 
         if($isTest) {
             $this->info("Total disk: $total_disk GB");
